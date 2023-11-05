@@ -1,12 +1,57 @@
-import { IsString } from "class-validator";
+import { IsArray, IsEnum, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { baseType, categoryType, platformType } from "../../shared/schema/products";
+import { SkuDetails } from "../../shared/schema/skuDetails";
 
 export class CreateProductDto {
   @IsString()
-  productName: string
+  @IsNotEmpty()
+  productName: string;
 
-  description: string
+  @IsString()
+  @IsNotEmpty()
+  description: string;
 
-  image: string
+  @IsOptional()
+  image?: string;
 
-  category: string
+  @IsOptional()
+  imageDetails?: Record<string, any>;
+
+  @IsString()
+  @IsNotEmpty()
+  @IsEnum(categoryType)
+  category: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @IsEnum(platformType)
+  platformType: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @IsEnum(baseType)
+  baseType: string;
+
+  @IsString()
+  @IsNotEmpty()
+  productUrl: string;
+
+  @IsString()
+  @IsNotEmpty()
+  downloadUrl: string;
+
+  @IsArray()
+  @IsNotEmpty()
+  requirementSpecification: Record<string, any>[];
+
+  @IsArray()
+  @IsNotEmpty()
+  highlights: string[];
+
+  @IsOptional()
+  @IsArray()
+  skuDetails?: SkuDetails[];
+
+  @IsOptional()
+  stripeProductId?: string;
 }

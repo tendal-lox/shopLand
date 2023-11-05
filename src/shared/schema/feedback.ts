@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import mongoose from "mongoose";
-import { Users } from "./user";
 
 @Schema({timestamps: true})
 export class Feedbacks extends mongoose.Document {

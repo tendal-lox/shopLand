@@ -2,16 +2,17 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { Role, Roles } from "../shared/decorators/roles.decorator";
+import { Public, Role, Roles } from "../shared/decorators/roles.decorator";
 
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
-  @Role(Roles.ADMIN)
+  // @Role(Roles.ADMIN)
+  @Public()
   @Post()
-  create(@Body() createProductDto: CreateProductDto) {
-    return this.productsService.create(createProductDto);
+  create() {
+    return this.productsService.create();
   }
 
   @Get()

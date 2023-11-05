@@ -56,7 +56,7 @@ export class Products extends Document {
   @Prop([{type: skuDetailSchema}])
   skuDetails: SkuDetails
 
-  @Prop({})
+  @Prop({type: Object})
   imageDetails: Record<string, any>
 
   @Prop({required: true})
