@@ -1,7 +1,7 @@
 'use strict';
 import nodemailer = require('nodemailer');
 
-export const mailSender = async (email: string, token: number | string) => {
+export const mailSender = async (email: string, token?: number | string, ) => {
   const testAccount = await nodemailer.createTestAccount();
 
   const transporter = nodemailer.createTransport({

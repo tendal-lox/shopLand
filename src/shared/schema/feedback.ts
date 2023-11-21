@@ -1,19 +1,19 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import mongoose from "mongoose";
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import mongoose from 'mongoose';
 
-@Schema({timestamps: true})
+@Schema({ timestamps: true })
 export class Feedbacks extends mongoose.Document {
   @Prop()
-  customerId: string
+  customerId: string;
 
   @Prop()
-  customerName: string
+  customerName: string;
 
   @Prop()
-  rating: number
+  rating: number;
 
   @Prop()
-  feedbackMsg: string
+  feedbackMsg: string;
 }
 
 export const feedbackSchema = SchemaFactory.createForClass(Feedbacks);

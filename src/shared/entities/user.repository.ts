@@ -22,10 +22,10 @@ export class UserRepository {
 
   async findAll(query: any) {
     try {
-      return await this.userModel.find(query)
+      return await this.userModel.find(query);
     } catch (err) {
       this.logger.error(err);
-      throw err
+      throw err;
     }
   }
 

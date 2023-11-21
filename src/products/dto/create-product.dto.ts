@@ -1,6 +1,16 @@
-import { IsArray, IsEnum, IsNotEmpty, IsOptional, IsString } from "class-validator";
-import { baseType, categoryType, platformType } from "../../shared/schema/products";
-import { SkuDetails } from "../../shared/schema/skuDetails";
+import {
+  IsArray,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
+import {
+  baseType,
+  categoryType,
+  platformType,
+} from '../../shared/schema/products';
+import { SkuDetails } from '../../shared/schema/skuDetails';
 
 export class CreateProductDto {
   @IsString()
@@ -46,7 +56,7 @@ export class CreateProductDto {
 
   @IsArray()
   @IsNotEmpty()
-  highlights: string[];
+  highLights: string[];
 
   @IsOptional()
   @IsArray()

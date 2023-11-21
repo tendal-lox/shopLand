@@ -11,14 +11,14 @@ import {
   Query,
   Req,
   Res,
-  UseGuards
-} from "@nestjs/common";
-import { UsersService } from "./users.service";
-import { CreateUserDto, UserLoginDto } from "./dto/create-user.dto";
-import { UpdateUserDto } from "./dto/update-user.dto";
-import { Request, Response } from "express";
-import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
-import { Public, Role, Roles } from "../shared/decorators/roles.decorator";
+  UseGuards,
+} from '@nestjs/common';
+import { UsersService } from './users.service';
+import { CreateUserDto, UserLoginDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { Request, Response } from 'express';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { Public, Role, Roles } from '../shared/decorators/roles.decorator';
 
 @Controller('users')
 export class UsersController {
@@ -36,11 +36,15 @@ export class UsersController {
   async login(
     @Body() dto: UserLoginDto,
     @Res({ passthrough: true }) res: Response,
-    @Req() req: Request
+    @Req() req: Request,
   ) {
-    const loginRes = await this.usersService.login(dto.email, dto.password, res);
+    const loginRes = await this.usersService.login(
+      dto.email,
+      dto.password,
+      res,
+    );
     // console.log(req)
-    return loginRes
+    return loginRes;
   }
 
   @Public()
@@ -66,8 +70,8 @@ export class UsersController {
 
   @Role(Roles.CUSTOMER)
   @Get('logout')
-  async logOut(@Res() res: Response) {
-    return this.usersService.logOut(res);
+  async logOut(@Res() res: Response, @Req() req: Request) {
+    return this.usersService.logOut(res, req);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -83,10 +87,7 @@ export class UsersController {
   }
 
   @Patch('update-username-password/:id')
-  update(
-    @Param('id') id: string,
-    @Body() updateUserDto: UpdateUserDto,
-  ) {
+  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.updateNameAndPassword(id, updateUserDto);
   }
 

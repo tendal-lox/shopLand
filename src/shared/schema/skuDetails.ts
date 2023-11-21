@@ -1,25 +1,25 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import mongoose from "mongoose";
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import mongoose from 'mongoose';
 
-@Schema({timestamps: true})
+@Schema({ timestamps: true })
 export class SkuDetails extends mongoose.Document {
   @Prop()
-  skuName: string
+  skuName: string;
 
   @Prop()
-  price: number
+  price: number;
 
   @Prop()
-  validity: number
+  validity: number;
 
   @Prop()
-  lifeTime: boolean
+  lifeTime: boolean;
 
   @Prop()
-  stripePriceId: string
+  stripePriceId: string;
 
   @Prop()
-  skuCode: string
+  skuCode: string;
 }
 
 export const skuDetailSchema = SchemaFactory.createForClass(SkuDetails);

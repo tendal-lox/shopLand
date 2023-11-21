@@ -18,7 +18,7 @@ import {
 import { mailSender } from '../shared/utilities/mailHandler';
 import Redis from 'ioredis';
 import { AuthTokenService } from '../shared/utilities/generateToken';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 const redis = new Redis();
 import { faker } from '@faker-js/faker';
 
@@ -94,11 +94,11 @@ export class UsersService {
     const payload = {
       email: currentUser.email,
       id: currentUser._id,
-      type: currentUser.type
+      type: currentUser.type,
     };
     const accessToken = await this.authTokenService.generateToken(payload);
 
-    res.cookie('Authentication', accessToken, {httpOnly: true});
+    res.cookie('Authentication', accessToken, { httpOnly: true });
 
     return {
       success: true,
@@ -202,7 +202,8 @@ export class UsersService {
     };
   }
 
-  logOut(res: Response) {
+  logOut(res: Response, req: Request) {
+    delete req?.user;
     res.clearCookie('Authentication');
 
     return res.status(HttpStatus.OK).json({
@@ -213,34 +214,37 @@ export class UsersService {
 
   async updateNameAndPassword(_id: string, dto: UpdateUserDto) {
     // Find user
-    const user = await this.userModelService.findOne({_id})
-    console.log(user)
+    const user = await this.userModelService.findOne({ _id });
+    console.log(user);
 
     // Modify password and name
-    const {newPassword, oldPassword, name} = dto
+    const { newPassword, oldPassword, name } = dto;
 
-    if (!await comparePassword(oldPassword, user.password)) throw new Error('Current password does not match')
+    if (!(await comparePassword(oldPassword, user.password)))
+      throw new Error('Current password does not match');
 
-    const hashNewPass = await generateHashPassword(newPassword)
+    const hashNewPass = await generateHashPassword(newPassword);
 
     // Update user details
-    this.userModelService.updateOne({_id}, {password: hashNewPass, name: name }).then()
+    this.userModelService
+      .updateOne({ _id }, { password: hashNewPass, name: name })
+      .then();
 
     return {
       success: true,
-      message: 'Username and password have been updated'
-    }
+      message: 'Username and password have been updated',
+    };
   }
 
   async findAll(type: string) {
     // Find all users
-    const allData = await this.userModelService.findAll({type})
+    const allData = await this.userModelService.findAll({ type });
 
     return {
       success: true,
       message: 'All users',
-      result: allData
-    }
+      result: allData,
+    };
   }
 
   findOne(id: number) {
