@@ -11,6 +11,7 @@ import {
   ParseIntPipe,
   UseInterceptors,
   UploadedFile,
+  Req,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -20,6 +21,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { ProductSkuDto, ProductSkuDtoArray } from './dto/product-sku.dto';
+import { Request } from 'express';
 
 @Controller('products')
 export class ProductsController {
@@ -149,5 +151,27 @@ export class ProductsController {
     @Body('newLicenseKey') newLicenseKey: string,
   ) {
     return await this.productsService.updateLicense(licenseId, newLicenseKey);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Role(Roles.CUSTOMER)
+  @Post(':productId/reviews')
+  async addProductReview(
+    @Param('productId') productId: string,
+    @Body('review') review: string,
+    @Body('reting') rating: number,
+    @Req() req: Request
+  ) {
+    return await this.productsService.addProductReview(productId, review, rating, req.user)
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Role(Roles.ADMIN)
+  @Delete(':productId/review/:reviewId')
+  async deleteProductReview(
+    @Param('reviewId') reviewId: string,
+    @Param('productId') productId: string
+  ) {
+    return await this.productsService.deleteProductReview(reviewId, productId)
   }
 }

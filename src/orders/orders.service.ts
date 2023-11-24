@@ -8,6 +8,7 @@ import Stripe from 'stripe';
 import { UserTypes } from 'src/shared/schema/user';
 import { orderStatus, paymentStatus } from 'src/shared/schema/order';
 import { mailSender } from 'src/shared/utilities/mailHandler';
+import * as process from 'process';
 
 const stripe = new Stripe(
   'sk_test_51O91fcAm1nn4U9G7gMF0zsefxfr5T4VYStyzB7CFng5sDn36y3Cvgo7V1DelxyXcu8FJZaT1yPXxbODD6kF5eZwZ00X3URUiOm',

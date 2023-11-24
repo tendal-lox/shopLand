@@ -8,6 +8,7 @@ import { Products } from 'src/shared/schema/products';
 import { GetAllProductDto } from './dto/getAll-query.dto';
 import { ProductSkuDto, ProductSkuDtoArray } from './dto/product-sku.dto';
 import { LicenseRepository } from 'src/shared/entities/license.repository';
+import { OrderRepository } from 'src/shared/entities/order.repository';
 
 const stripe = new Stripe(
   'sk_test_51O91fcAm1nn4U9G7gMF0zsefxfr5T4VYStyzB7CFng5sDn36y3Cvgo7V1DelxyXcu8FJZaT1yPXxbODD6kF5eZwZ00X3URUiOm',
@@ -26,6 +27,7 @@ export class ProductsService {
   constructor(
     private readonly productModelService: ProductRepository,
     private readonly licenseModelService: LicenseRepository,
+    private readonly orderModelService: OrderRepository,
   ) {}
 
   async create(dto: CreateProductDto): Promise<returnObject> {
@@ -361,5 +363,77 @@ export class ProductsService {
       message: 'License deleted successfully',
       result: updatedLicense,
     };
+  }
+  
+  async addProductReview(productId: string, review: string, rating: number, user: Record<string, any>) {
+    // Check product existance
+    const product: any = await this.productModelService.findOne({
+      _id: productId,
+    });
+    if (!product) throw new NotFoundException('Product Not Found');
+
+    // Check if user gave the review for the product
+    const reviewStatus = await product.feedbackDetails.find(eachReview => eachReview.customerId === user.id)
+    if (!reviewStatus) throw new Error('You have already gave the feedback')
+
+    // check if user ordered the product
+    const userOrders = await this.orderModelService.findAll({userId: user.id})
+    const isOrdered = userOrders.some(eachOrder => eachOrder.orderedItems.some(eachItems => eachItems.productId === productId))
+    if (!isOrdered) throw new NotFoundException('You have not purchased this product')
+
+    // Calculating avg-rating
+    const ratings = []
+    product.feedbackDetails.forEach(eachFeedback => ratings.push(eachFeedback.rating))
+
+    let avgRating: number
+    if (ratings.length > 0) {
+      avgRating = +(ratings.reduce((acc, curr) => acc + curr, 0) / ratings.length).toFixed(2)
+    }
+
+    // Update stuff in product DB
+    const feedbackDetails = {
+      feedbackMsg: review,
+      rating: rating,
+      customerId: user.id,
+      customerName: user.name
+    }
+    const result = await this.productModelService.updateOne(
+      {_id: productId},
+      {$set: {avgRating}, $push: {feedbackDetails}}
+    )
+
+    return {
+      success: true,
+      message: 'review added successfully',
+      result
+    }
+  }
+
+  async deleteProductReview(reviewId: string, productId: string) {
+    // Check if product exist
+    const product: any = await this.productModelService.findOne({_id: productId})
+    if (!product) throw new NotFoundException('Product not found')
+
+    // Check if feedBack exist
+    const reviewExistance = product.feedbackDetails.some(eachFeedback => eachFeedback._id === reviewId)
+    if (!reviewExistance) throw new NotFoundException('Feedback not found')
+
+    // Calculating avg-rating
+    const ratings = []
+    product.feedbackDetails.forEach(eachFeedback => {
+      if (eachFeedback._id !== reviewId) ratings.push(eachFeedback.rating)
+    })
+    let avgRating = +(ratings.reduce((acc, curr) => acc + curr), 0).toFixed(2)
+
+    const result = await this.productModelService.updateOne(
+      {_id: reviewId},
+      {$set: avgRating, $pull: {feedbackDetails: {_id: reviewId}}}
+    )
+
+    return {
+      success: true,
+      message: 'Review deleted successfully',
+      result
+    }
   }
 }

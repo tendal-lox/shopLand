@@ -25,7 +25,7 @@ export class ProductRepository {
 
   async updateOne(query: any, data: any) {
     try {
-      return await this.productsModel.updateOne(query, data);
+      return await this.productsModel.findOneAndUpdate(query, data);
     } catch (err) {
       throw new Error(`Error happend during upadte product: ${err}`);
     }
